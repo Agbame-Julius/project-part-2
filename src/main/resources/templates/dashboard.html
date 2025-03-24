@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Image Gallery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2d3436;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #6c5ce7, #00cec9);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 36px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #636e72;
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        /* Upload Container Styles */
+        .upload-section {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            margin-bottom: 40px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .upload-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .upload-title {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .upload-title i {
+            margin-right: 10px;
+            color: #6c5ce7;
+        }
+
+        .upload-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .description-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px 15px;
+            border: 1px solid #dfe6e9;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .description-input:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
+        }
+
+        .upload-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .upload-btn {
+            background: linear-gradient(90deg, #6c5ce7, #a29bfe);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            border: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .upload-btn i {
+            margin-right: 8px;
+        }
+
+        .upload-btn:hover {
+            background: linear-gradient(90deg, #5d4ee6, #918dfc);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(108, 92, 231, 0.2);
+        }
+
+        .upload-btn:active {
+            transform: translateY(0);
+        }
+
+        .file-info {
+            display: none;
+            align-items: center;
+            font-size: 14px;
+            color: #636e72;
+            background-color: #f5f7fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .file-info i {
+            margin-right: 8px;
+            color: #6c5ce7;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: #e1e4e8;
+            border-radius: 8px;
+            margin-top: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #6c5ce7, #00cec9);
+            transition: width 0.3s;
+        }
+
+        /* Image Grid Styles */
+        .gallery-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .gallery-title {
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        .view-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-option {
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: white;
+            border: 1px solid #dfe6e9;
+            cursor: pointer;
+            color: #636e72;
+            transition: all 0.2s;
+        }
+
+        .view-option:hover, .view-option.active {
+            background-color: #6c5ce7;
+            color: white;
+            border-color: #6c5ce7;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .image-card {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .image-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-container {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .image-card:hover .image-container img {
+            transform: scale(1.08);
+        }
+
+        .image-info {
+            padding: 20px;
+        }
+
+        .image-info h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #2d3436;
+        }
+
+        .image-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .image-description {
+            font-size: 14px;
+            color: #636e72;
+            line-height: 1.5;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* Empty Message Styles */
+        .empty-message {
+            text-align: center;
+            padding: 60px 0;
+            color: #7f8c8d;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        .empty-message i {
+            font-size: 60px;
+            color: #dfe6e9;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .empty-message h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #2d3436;
+        }
+
+        .empty-message p {
+            max-width: 400px;
+            margin: 0 auto;
+            color: #7f8c8d;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(108, 92, 231, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #6c5ce7;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Pagination Styles */
+        footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e4e8;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pagination-btn {
+            background-color: white;
+            border: 1px solid #dfe6e9;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            color: #2d3436;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background-color: #6c5ce7;
+            color: white;
+            border-color: #6c5ce7;
+            transform: translateY(-2px);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #pageInfo {
+            margin: 0 15px;
+            font-size: 14px;
+            color: #636e72;
+            background-color: #f5f7fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal.active {
+            opacity:.9;
+        }
+
+        .modal-content {
+            display: block;
+            max-width: 90%;
+            max-height: 80%;
+            margin: 60px auto;
+            object-fit: contain;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s, transform 0.4s;
+        }
+
+        .modal.active .modal-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 1001;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-info {
+            margin: 15px auto;
+            width: 80%;
+            max-width: 700px;
+            color: white;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-caption {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .modal-description {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .modal-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .upload-actions {
+                flex-direction: column;
+            }
+
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .image-container {
+                height: 150px;
+            }
+
+            .gallery-heading {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .modal-content {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Modern Image Gallery</h1>
+        <p class="subtitle">Upload, organize, and share your favorite images in one beautiful gallery.</p>
+    </header>
+
+    <section class="upload-section">
+        <h2 class="upload-title"><i class="fas fa-cloud-upload-alt"></i> Upload New Image</h2>
+        <div class="upload-container">
+            <textarea id="imageDescription" class="description-input" placeholder="Add a description for your image..."></textarea>
+            <div class="upload-actions">
+                <label for="fileInput" class="upload-btn">
+                    <i class="fas fa-image"></i> Select Image
+                </label>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                <button id="uploadButton" class="upload-btn" disabled>
+                    <i class="fas fa-upload"></i> Upload Image
+                </button>
+            </div>
+            <div id="fileInfo" class="file-info">
+                <i class="fas fa-file-image"></i>
+                <span id="fileName">No file selected</span>
+            </div>
+            <div id="uploadProgress" class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gallery-heading">
+        <h2 class="gallery-title">Your Gallery</h2>
+        <div class="view-options">
+            <button class="view-option active"><i class="fas fa-th"></i> Grid</button>
+            <button class="view-option"><i class="fas fa-list"></i> List</button>
+        </div>
+    </div>
+
+    <main>
+        <div id="imageGrid" class="image-grid"></div>
+        <div id="emptyMessage" class="empty-message" style="display: none;">
+            <i class="fas fa-images"></i>
+            <h3>Your gallery is empty</h3>
+            <p>Upload your first image to get started with your collection.</p>
+        </div>
+        <div id="loadingSpinner" class="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="pagination">
+            <button id="prevPage" class="pagination-btn" disabled>
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <span id="pageInfo">Page 1 of 1</span>
+            <button id="nextPage" class="pagination-btn" disabled>
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </footer>
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="modal">
+    <span class="close-modal">&times;</span>
+    <img id="modalImage" class="modal-content">
+    <div class="modal-info">
+        <h3 id="modalCaption" class="modal-caption"></h3>
+        <p id="modalDescription" class="modal-description"></p>
+        <div class="modal-meta">
+            <span id="modalSize"></span>
+            <span id="modalDate"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // API Configuration
+    const ITEMS_PER_PAGE = 12;
+
+    // State variables
+    let currentPage = 0;
+    let totalPages = 0;
+    let totalItems = 0;
+    let selectedFile = null;
+
+    // DOM Elements
+    const imageGrid = document.getElementById('imageGrid');
+    const emptyMessage = document.getElementById('emptyMessage');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const prevPageBtn = document.getElementById('prevPage');
+    const nextPageBtn = document.getElementById('nextPage');
+    const pageInfo = document.getElementById('pageInfo');
+    const fileInput = document.getElementById('fileInput');
+    const uploadButton = document.getElementById('uploadButton');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressBar = document.querySelector('.progress-bar');
+    const imageModal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalCaption = document.getElementById('modalCaption');
+    const modalDescription = document.getElementById('modalDescription');
+    const modalSize = document.getElementById('modalSize');
+    const modalDate = document.getElementById('modalDate');
+    const closeModal = document.querySelector('.close-modal');
+    const imageDescription = document.getElementById('imageDescription');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileNameElement = document.getElementById('fileName');
+    const viewOptions = document.querySelectorAll('.view-option');
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        loadImages();
+        setupEventListeners();
+    });
+
+    // Setup Event Listeners
+    function setupEventListeners() {
+        fileInput.addEventListener('change', handleFileSelection);
+        uploadButton.addEventListener('click', handleFileUpload);
+        prevPageBtn.addEventListener('click', goToPreviousPage);
+        nextPageBtn.addEventListener('click', goToNextPage);
+        closeModal.addEventListener('click', closeImageModal);
+
+        // Toggle view options
+        viewOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                viewOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+
+                // Handle view change
+                if (option.textContent.includes('List')) {
+                    imageGrid.style.gridTemplateColumns = '1fr';
+                } else {
+                    imageGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(270px, 1fr))';
+                }
+            });
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                closeImageModal();
+            }
+        });
+    }
+
+    // Handle file selection
+    function handleFileSelection() {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.match('image.*')) {
+            alert('Please select an image file (JPEG, PNG, etc.)');
+            fileInput.value = '';
+            return;
+        }
+
+        selectedFile = file;
+        fileInfo.style.display = 'flex';
+        fileNameElement.textContent = file.name;
+        uploadButton.disabled = false;
+    }
+
+    // Load images from API
+    async function loadImages() {
+        showLoading(true);
+        try {
+            const response = await fetch(`/api/images?page=${currentPage}&size=${ITEMS_PER_PAGE}`);
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch images');
+            }
+
+            const data = await response.json();
+            displayImages(data.images);
+
+            // Update pagination info
+            totalItems = data.totalItems;
+            totalPages = data.totalPages;
+
+            updatePaginationControls();
+            showLoading(false);
+
+            // Show empty message if no images
+            emptyMessage.style.display = data.images.length === 0 && currentPage === 0 ? 'block' : 'none';
+        } catch (error) {
+            console.error('Error fetching images:', error);
+            showLoading(false);
+            emptyMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i><h3>Something went wrong</h3><p>Error loading images. Please try again later.</p>';
+            emptyMessage.style.display = 'block';
+        }
+    }
+
+    // Display images in grid
+    function displayImages(images) {
+        imageGrid.innerHTML = '';
+
+        images.forEach(image => {
+            const imageCard = document.createElement('div');
+            imageCard.className = 'image-card';
+
+            // Format file size
+            const fileSize = formatFileSize(image.size);
+
+            // Format date
+            const uploadDate = new Date(image.uploadDate).toLocaleDateString();
+
+            // Create image element
+            const fileName = image.fileName.length > 20
+                ? image.fileName.substring(0, 17) + '...'
+                : image.fileName;
+
+            // Get description (we're assuming it's in the API response)
+            const description = image.description || 'No description provided.';
+
+            imageCard.innerHTML = `
+            <div class="image-container">
+                <img src="${image.url}" alt="${image.fileName}">
+            </div>
+            <div class="image-info">
+                <h3 title="${image.fileName}">${fileName}</h3>
+                <div class="image-meta">
+                    <span>${fileSize}</span>
+                    <span>Uploaded ${uploadDate}</span>
+                </div>
+                <p class="image-description">${description}</p>
+            </div>
+        `;
+
+            // Add click event to open modal
+            imageCard.addEventListener('click', () => {
+                openImageModal(image);
+            });
+
+            imageGrid.appendChild(imageCard);
+        });
+    }
+
+    // Open image modal
+    function openImageModal(image) {
+        modalImage.src = image.url;
+        modalCaption.textContent = image.fileName;
+        modalDescription.textContent = image.description || 'No description provided.';
+        modalSize.textContent = formatFileSize(image.size);
+        modalDate.textContent = `Uploaded on ${new Date(image.uploadDate).toLocaleDateString()}`;
+
+        imageModal.style.display = 'block';
+        setTimeout(() => {
+            imageModal.classList.add('active');
+        }, 10);
+    }
+
+    // Close image modal
+    function closeImageModal() {
+        imageModal.classList.remove('active');
+        setTimeout(() => {
+            imageModal.style.display = 'none';
+        }, 300);
+    }
+
+    // Handle file upload
+    async function handleFileUpload() {
+        if (!selectedFile) return;
+
+        // Show progress bar
+        uploadProgress.style.display = 'block';
+        progressBar.style.width = '0%';
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('description', imageDescription.value.trim());
+
+        try {
+            // Simulate progress for better UX
+            const progressInterval = simulateProgress();
+
+            // Upload file
+            const response = await fetch(`/api/images/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            // Clear progress simulation
+            clearInterval(progressInterval);
+
+            if (!response.ok) {
+                throw new Error('Failed to upload image');
+            }
+
+            // Complete progress bar
+            progressBar.style.width = '100%';
+
+            // Reset file input and form
+            fileInput.value = '';
+            imageDescription.value = '';
+            fileInfo.style.display = 'none';
+            uploadButton.disabled = true;
+            selectedFile = null;
+
+            // Reload images after short delay
+            setTimeout(() => {
+                uploadProgress.style.display = 'none';
+                loadImages();
+            }, 500);
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Failed to upload image. Please try again.');
+            uploadProgress.style.display = 'none';
+        }
+    }
+
+    // Simulate progress for better UX
+    function simulateProgress() {
+        let progress = 0;
+        return setInterval(() => {
+            if (progress < 90) {
+                progress += Math.random() * 10;
+                progressBar.style.width = `${Math.min(progress, 90)}%`;
+            }
+        }, 200);
+    }
+
+    // Update pagination controls
+    function updatePaginationControls() {
+        prevPageBtn.disabled = currentPage === 0;
+        nextPageBtn.disabled = currentPage >= totalPages - 1;
+
+        pageInfo.textContent = `Page ${currentPage + 1} of ${Math.max(1, totalPages)}`;
+    }
+
+    // Go to previous page
+    function goToPreviousPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            loadImages();
+            window.scrollTo(0, 0);
+        }
+    }
+
+    // Go to next page
+    function goToNextPage() {
+        if (currentPage < totalPages - 1) {
+            currentPage++;
+            loadImages();
+            window.scrollTo(0, 0);
+        }
+    }
+
+    // Show/hide loading spinner
+    function showLoading(isLoading) {
+        loadingSpinner.style.display = isLoading ? 'flex' : 'none';
+    }
+
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+</script>
+</body>
+</html>
