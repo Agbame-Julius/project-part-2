@@ -684,6 +684,7 @@
         uploadButton.disabled = false;
     }
 
+
     // Load images from API
     async function loadImages() {
         showLoading(true);
@@ -698,7 +699,7 @@
             displayImages(data.images);
 
             // Update pagination info
-            totalItems = data.totalItems;
+            totalItems = data.totalElements;
             totalPages = data.totalPages;
 
             updatePaginationControls();

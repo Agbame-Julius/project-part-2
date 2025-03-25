@@ -13,7 +13,7 @@ import java.io.IOException;
 public class ImageService {
     private final ImageRepository imageRepository;
     private final AmazonS3 s3Client;
-    private final String bucketName = "agbame";
+    private final String bucketName = "agbame2";
 
 
 public String uploadImage(MultipartFile file) throws IOException {
