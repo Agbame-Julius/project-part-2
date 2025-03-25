@@ -685,28 +685,24 @@
     }
 
 
-    // Load images from API
+    //Load images from API
     async function loadImages() {
         showLoading(true);
         try {
             const response = await fetch(`/api/images?page=${currentPage}&size=${ITEMS_PER_PAGE}`);
-
             if (!response.ok) {
                 throw new Error('Failed to fetch images');
             }
-
             const data = await response.json();
-            displayImages(data.images);
-
-            // Update pagination info
+            // Spring Page object has 'content' property that contains the actual items
+            displayImages(data.content);
+            // Update pagination info using Spring Page properties
             totalItems = data.totalElements;
             totalPages = data.totalPages;
-
             updatePaginationControls();
             showLoading(false);
-
             // Show empty message if no images
-            emptyMessage.style.display = data.images.length === 0 && currentPage === 0 ? 'block' : 'none';
+            emptyMessage.style.display = data.content.length === 0 && currentPage === 0 ? 'block' : 'none';
         } catch (error) {
             console.error('Error fetching images:', error);
             showLoading(false);

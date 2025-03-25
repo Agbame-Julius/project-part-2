@@ -35,8 +35,7 @@ public class Controller {
         image.setCreated(LocalDateTime.now());
         image.setDescription(description);
         image.setUrl(url);
-
-        return imageRepository.save(image);
+       return imageRepository.save(image);
     }
 
     @DeleteMapping("/{id}")
