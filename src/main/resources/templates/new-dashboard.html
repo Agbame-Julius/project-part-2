@@ -4,155 +4,352 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #F4F4F4;
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #50E3C2;
+            --background-color: #F5F7FA;
+            --card-background: #FFFFFF;
+            --text-color: #2C3E50;
+            --accent-color: #FF6B6B;
         }
-        .upload-section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .upload-section input,
-        .upload-section button {
-            margin: 10px 0;
-            padding: 10px;
-            width: 100%;
+
+        * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .upload-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(76, 144, 226, 0.2);
+            padding: 30px;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .upload-section h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
             gap: 15px;
         }
-        .image-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
+
+        .file-input-wrapper {
+            position: relative;
+            width: 100%;
         }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .file-input-custom {
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            background-color: rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .file-input-custom::before {
+            content: 'Choose File';
+            display: block;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .file-input-wrapper:hover .file-input-custom {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .upload-inputs input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .upload-inputs input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .upload-inputs input:focus {
+            outline: none;
+            border-color: white;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+        }
+
+        .upload-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+        }
+
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .view-toggle button {
+            background-color: rgba(255,255,255,0.2);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-toggle button.active {
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .image-card {
+            background-color: var(--card-background);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: scale(1.05);
+        }
+
         .image-card img {
             width: 100%;
-            height: 200px;
+            height: 250px;
             object-fit: cover;
         }
+
         .image-card .description {
-            padding: 10px;
+            padding: 15px;
             text-align: center;
+            background-color: #f9f9f9;
         }
+
+        .delete-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
         .pagination {
             display: flex;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 30px;
+            gap: 15px;
         }
+
         .pagination button {
-            margin: 0 10px;
-            padding: 10px 15px;
-            background-color: #007BFF;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 4px;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
+
         .pagination button:disabled {
-            background-color: #CCCCCC;
+            background-color: #A9A9A9;
             cursor: not-allowed;
         }
     </style>
 </head>
 <body>
-<div class="upload-section">
-    <h2>Upload Image</h2>
-    <input type="file" id="imageFile" accept="image/*">
-    <input type="text" id="imageDescription" placeholder="Enter image description">
-    <button onclick="uploadImage()">Upload Image</button>
+<div class="container">
+    <div class="upload-section">
+        <h2>Upload Your Image</h2>
+        <div class="upload-form">
+            <div class="file-input-wrapper">
+                <input type="file" id="imageFile" accept="image/*" required>
+                <div class="file-input-custom">
+                    <span id="fileNameDisplay">No file chosen</span>
+                </div>
+            </div>
+            <div class="upload-inputs">
+                <input type="text" id="imageDescription" placeholder="Enter image description" required>
+            </div>
+            <button class="upload-button" onclick="uploadImage()">Upload Image</button>
+        </div>
+    </div>
+
+    <div class="view-toggle">
+        <button onclick="toggleView('grid')" class="active" id="gridViewBtn">Grid View</button>
+        <button onclick="toggleView('list')" id="listViewBtn">List View</button>
+    </div>
+
+    <div id="gallery" class="gallery"></div>
+
+    <div class="pagination">
+        <button id="prevButton" onclick="changePage(-1)">Previous</button>
+        <span id="pageInfo">Page 1</span>
+        <button id="nextButton" onclick="changePage(1)">Next</button>
+    </div>
 </div>
-<div id="gallery" class="gallery"></div>
-<div class="pagination">
-    <button id="prevButton" onclick="changePage(-1)">Previous</button>
-    <span id="pageInfo">Page 1</span>
-    <button id="nextButton" onclick="changePage(1)">Next</button>
-</div>
+
 <script>
     let currentPage = 0;
     let totalPages = 0;
-    // Fetch images when page loads
+    let currentView = 'grid';
+
+    // File input display
+    document.getElementById('imageFile').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+        document.getElementById('fileNameDisplay').textContent = fileName;
+    });
+
+    function toggleView(view) {
+        const gallery = document.getElementById('gallery');
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+
+        currentView = view;
+        gallery.className = `gallery ${view}-view`;
+
+        if (view === 'grid') {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+        } else {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+        }
+
+        fetchImages(currentPage);
+    }
+
     function fetchImages(page = 0) {
         fetch(`/api/images?page=${page}&size=10`)
             .then(response => response.json())
             .then(data => {
                 const gallery = document.getElementById('gallery');
-                gallery.innerHTML = ''; // Clear existing images
-                // Populate gallery
+                gallery.innerHTML = '';
                 data.content.forEach(image => {
                     const imageCard = document.createElement('div');
                     imageCard.className = 'image-card';
                     imageCard.innerHTML = `
                             <img src="${image.url}" alt="${image.description}">
-                            <div class="description">${image.description}</div>
-                            <button onclick="deleteImage(${image.id})">Delete</button>
+                            <div class="description">
+                                <p>${image.description}</p>
+                                <button class="delete-button" onclick="deleteImage(${image.id})">Delete</button>
+                            </div>
                         `;
                     gallery.appendChild(imageCard);
                 });
-                // Update pagination
                 currentPage = data.number;
                 totalPages = data.totalPages;
                 updatePaginationButtons();
             })
             .catch(error => console.error('Error fetching images:', error));
     }
-    // Upload image
+
     function uploadImage() {
         const fileInput = document.getElementById('imageFile');
         const descriptionInput = document.getElementById('imageDescription');
+
+        // Validate inputs
         if (!fileInput.files.length) {
             alert('Please select an image');
             return;
         }
+
+        if (!descriptionInput.value.trim()) {
+            alert('Please enter an image description');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
         formData.append('description', descriptionInput.value);
+
         fetch('/api/images/upload', {
             method: 'POST',
             body: formData
         })
             .then(response => response.json())
             .then(data => {
-                // Clear inputs
                 fileInput.value = '';
                 descriptionInput.value = '';
-                // Refresh images
+                document.getElementById('fileNameDisplay').textContent = 'No file chosen';
                 fetchImages(currentPage);
             })
             .catch(error => console.error('Error uploading image:', error));
     }
-    // Delete image
+
     function deleteImage(id) {
         fetch(`/api/images/${id}`, {
             method: 'DELETE'
         })
             .then(response => {
                 if (response.ok) {
-                    // Refresh images
                     fetchImages(currentPage);
                 }
             })
             .catch(error => console.error('Error deleting image:', error));
     }
-    // Change page
+
     function changePage(direction) {
         const newPage = currentPage + direction;
         if (newPage >= 0 && newPage < totalPages) {
             fetchImages(newPage);
         }
     }
-    // Update pagination buttons
+
     function updatePaginationButtons() {
         const prevButton = document.getElementById('prevButton');
         const nextButton = document.getElementById('nextButton');
@@ -161,7 +358,7 @@
         nextButton.disabled = currentPage === totalPages - 1;
         pageInfo.textContent = `Page ${currentPage + 1} of ${totalPages}`;
     }
-    // Initial fetch
+
     fetchImages();
 </script>
 </body>
