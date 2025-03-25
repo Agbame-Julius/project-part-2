@@ -11,6 +11,7 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class ImageService {
+    private final ImageRepository imageRepository;
     private final AmazonS3 s3Client;
     private final String bucketName = "agbame";
 
@@ -23,6 +24,25 @@ public String uploadImage(MultipartFile file) throws IOException {
 
     return s3Client.getUrl(bucketName, fileName).toString();
 }
+
+
+    public void deleteImage(Integer id) {
+        Image image = imageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Image not found"));
+
+        // Extract filename from the full URL
+        String fileName = extractFileNameFromUrl(image.getUrl());
+
+        // Delete from S3
+        s3Client.deleteObject(bucketName, fileName);
+
+        // Delete from database
+        imageRepository.delete(image);
+    }
+
+    private String extractFileNameFromUrl(String url) {
+        return url.substring(url.lastIndexOf('/') + 1);
+    }
 
 
 }

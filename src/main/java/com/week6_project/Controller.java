@@ -3,6 +3,8 @@ package com.week6_project;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,4 +38,15 @@ public class Controller {
 
         return imageRepository.save(image);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteImage(@PathVariable Integer id) {
+        try {
+            imageService.deleteImage(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete image");
+        }
+    }
 }
+

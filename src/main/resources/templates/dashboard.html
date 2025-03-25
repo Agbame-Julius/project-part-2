@@ -488,6 +488,36 @@
                 max-width: 95%;
             }
         }
+
+        .image-container {
+            position: relative;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .image-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            background-color: rgba(255, 0, 0, 0.9);
+        }
     </style>
 </head>
 <body>
@@ -840,6 +870,24 @@
         }
     }
 
+    async function deleteImage(imageId) {
+        try {
+            const response = await fetch(`/api/images/${imageId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete image');
+            }
+
+            // Reload images after deletion
+            loadImages();
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            alert('Failed to delete image. Please try again.');
+        }
+    }
+
     // Show/hide loading spinner
     function showLoading(isLoading) {
         loadingSpinner.style.display = isLoading ? 'flex' : 'none';
@@ -855,6 +903,8 @@
 
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     }
+
+
 </script>
 </body>
 </html>

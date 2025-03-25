@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 
-import static software.amazon.awssdk.regions.Region.EU_CENTRAL_1;
+import static software.amazon.awssdk.regions.Region.US_WEST_2;
 
 @Configuration
 public class Config {
@@ -30,11 +30,11 @@ public class Config {
         try {
             AWSSecretsManager client = AWSSecretsManagerClient.builder()
                     .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
-                    .withRegion(String.valueOf(EU_CENTRAL_1))
+                    .withRegion(String.valueOf(US_WEST_2))
                     .build();
 
             GetSecretValueRequest getSecretValueRequest = new GetSecretValueRequest();
-            String secretName ="ImageDashboard/database/credentials";
+            String secretName = "Project1Part2DBCredentials";
             getSecretValueRequest.setSecretId(secretName);
             GetSecretValueResult getSecretValueResult = client.getSecretValue(getSecretValueRequest);
             String secretValue = getSecretValueResult.getSecretString();
