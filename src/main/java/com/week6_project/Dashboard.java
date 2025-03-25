@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class Dashboard {
     @GetMapping("/")
     public String dashboard() {
-        return "dashboard";
+        return "new-dashboard";
     }
 }
