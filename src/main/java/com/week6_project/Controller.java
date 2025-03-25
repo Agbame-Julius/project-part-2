@@ -23,7 +23,7 @@ public class Controller {
         return imageRepository.findAllByOrderByIdDesc(PageRequest.of(page, size));
     }
 
-    @PostMapping
+    @PostMapping("/upload")
     public Image uploadImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("description") String description) throws IOException {
