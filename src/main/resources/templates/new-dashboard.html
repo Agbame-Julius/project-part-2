@@ -321,14 +321,30 @@
             method: 'POST',
             body: formData
         })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is OK before trying to parse JSON
+                if (!response.ok) {
+                    // If response is not OK, try to get error message
+                    return response.text().then(errorText => {
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                    });
+                }
+                // Try to parse JSON, but handle cases where response might be empty
+                return response.text().then(text => text ? JSON.parse(text) : {});
+            })
             .then(data => {
+                // Reset form
                 fileInput.value = '';
                 descriptionInput.value = '';
                 document.getElementById('fileNameDisplay').textContent = 'No file chosen';
+
+                // Refresh gallery
                 fetchImages(currentPage);
             })
-            .catch(error => console.error('Error uploading image:', error));
+            .catch(error => {
+                console.error('Error uploading image:', error);
+                alert(`Upload failed: ${error.message}`);
+            });
     }
 
     function deleteImage(id) {

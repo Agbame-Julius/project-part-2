@@ -45,20 +45,20 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest  .
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-#          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-#
-#      - name: Update the ECS Task definition
-#        id: task-defn
-#        uses: aws-actions/amazon-ecs-render-task-definition@v1
-#        with:
-#          task-definition: td.json
-#          container-name: mini-project-container
-#          image: ${{ steps.image.outputs.image }}
-#      - name: Automatic Deploy to ECS
-#        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-#        with:
-#          task-definition: ${{ steps.task-defn.outputs.task-definition }}
-#          service: mini-project-service
-#          cluster: mini-project-cluster
-#          wait-for-service-stability: true
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update the ECS Task definition
+        id: task-defn
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: container-project
+          image: ${{ steps.image.outputs.image }}
+      - name: Automatic Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-defn.outputs.task-definition }}
+          service: new-project-service
+          cluster: project-cluster
+          wait-for-service-stability: true
 
