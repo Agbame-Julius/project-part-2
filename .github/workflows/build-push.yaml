@@ -47,6 +47,13 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
       - name: Update the ECS Task definition
         id: task-defn
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -61,4 +68,5 @@ jobs:
           service: new-project-service
           cluster: project-cluster
           wait-for-service-stability: true
+
 
