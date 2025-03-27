@@ -383,6 +383,12 @@
             return;
         }
 
+        //check file size
+        if (fileInput.files[0] && fileInput.files[0].size > 10 * 1024 * 1024) {
+            alert('File size must be less than 10MB');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
         formData.append('description', descriptionInput.value);
