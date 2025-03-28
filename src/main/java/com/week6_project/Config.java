@@ -33,7 +33,7 @@ public class Config {
                     .build();
 
             GetSecretValueRequest getSecretValueRequest = new GetSecretValueRequest();
-            String secretName = "Project1Part2DBCredentials";
+            String secretName = "newrdscreds";
             getSecretValueRequest.setSecretId(secretName);
             GetSecretValueResult getSecretValueResult = client.getSecretValue(getSecretValueRequest);
             String secretValue = getSecretValueResult.getSecretString();
