@@ -21,7 +21,7 @@ public class Controller {
     @GetMapping
     public Page<Image> getImages(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "8") int size) {
         return imageRepository.findAllByOrderByIdDesc(PageRequest.of(page, size));
     }
 
